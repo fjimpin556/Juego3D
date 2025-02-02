@@ -4,7 +4,8 @@ public class AnimatorController : MonoBehaviour
 {
     Animator anim;
     [SerializeField] float jumpCooldown = 1.2f;
-    float lastJump = 0;
+    float lastJump = 0;    
+    public ControlPlayer CP;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -31,6 +32,15 @@ public class AnimatorController : MonoBehaviour
         {
             lastJump = Time.time;
             anim.SetTrigger("hasJumped");
+        }
+
+        if (CP.pistoltrue)
+        {
+            anim.SetBool("isPistol", true);
+        }
+        else
+        {
+            anim.SetBool("isPistol", false);
         }
     }
 }

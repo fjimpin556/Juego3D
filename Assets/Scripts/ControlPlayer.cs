@@ -20,6 +20,9 @@ public class ControlPlayer : MonoBehaviour
 
     [Header("Teclas")]
     public KeyCode jumpKey = KeyCode.Space;
+    public KeyCode gunKey = KeyCode.Alpha1;
+    [SerializeField] GameObject Pistol;
+    public bool pistoltrue = false;
 
     [Header("Comprobar suelo")]
     public float playerHeight = 2;
@@ -76,6 +79,20 @@ public class ControlPlayer : MonoBehaviour
             Jump();
 
             Invoke(nameof(ResetJump), jumpCooldown);
+        }
+
+        if(Input.GetKeyDown(gunKey))
+        {            
+            if (pistoltrue)
+            {
+                Pistol.SetActive(false);
+                pistoltrue = false;
+            }
+            else
+            {
+                Pistol.SetActive(true);
+                pistoltrue = true;
+            }
         }
     }
 
