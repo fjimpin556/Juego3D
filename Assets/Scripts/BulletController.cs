@@ -3,7 +3,7 @@ using UnityEngine;
 public class BulletController : MonoBehaviour
 {
     Rigidbody rb;
-    [SerializeField] float power = 150;
+    [SerializeField] float power = - 10;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -18,7 +18,7 @@ public class BulletController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     void Clean()
@@ -28,6 +28,9 @@ public class BulletController : MonoBehaviour
 
     void OnCollisionEnter(Collision other)
     {
-        Destroy(gameObject);
+        if (other.gameObject.tag != "Player")
+        {
+            Destroy(gameObject);
+        }
     }
 }
