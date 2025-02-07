@@ -29,13 +29,6 @@ public class ControlPlayer : MonoBehaviour
     public float playerHeight = 2;
     public LayerMask whatIsGround;
     bool grounded;
-
-    [Header("Player Step Climb")]
-    [SerializeField] GameObject stepRayUpper;
-    [SerializeField] GameObject stepRayLower;
-    [SerializeField] float stepHeight = 0.3f;
-    [SerializeField] float stepSmooth = 0.1f;
-
     public Transform orientation;
 
     float horizontalInput;
@@ -45,11 +38,13 @@ public class ControlPlayer : MonoBehaviour
 
     Rigidbody rb;
 
+    [Header("Historia")]
+    public static bool canMove = false;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
-        stepRayUpper.transform.position = new Vector3(stepRayUpper.transform.position.x, stepHeight, stepRayUpper.transform.position.z);
 
         readyToJump = true;
     }
@@ -59,8 +54,11 @@ public class ControlPlayer : MonoBehaviour
         // ground check
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.3f, whatIsGround);
 
-        MyInput();
-        SpeedControl();
+        if (canMove)
+        {
+            MyInput();
+            SpeedControl();
+        }
 
         // handle drag
         if (grounded)
@@ -72,7 +70,6 @@ public class ControlPlayer : MonoBehaviour
     private void FixedUpdate()
     {
         MovePlayer();
-        stepClimb();
     }
 
     private void MyInput()
@@ -81,7 +78,7 @@ public class ControlPlayer : MonoBehaviour
         verticalInput = Input.GetAxisRaw("Vertical");
 
         // when to jump
-        if(Input.GetKeyDown(jumpKey) && readyToJump && grounded)
+        if (Input.GetKeyDown(jumpKey) && readyToJump && grounded)
         {
             readyToJump = false;
 
@@ -90,8 +87,8 @@ public class ControlPlayer : MonoBehaviour
             Invoke(nameof(ResetJump), jumpCooldown);
         }
 
-        if(Input.GetKeyDown(gunKey))
-        {            
+        if (Input.GetKeyDown(gunKey))
+        {
             if (pistoltrue)
             {
                 Pistol.SetActive(false);
@@ -111,11 +108,11 @@ public class ControlPlayer : MonoBehaviour
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
         // on ground
-        if(grounded)
+        if (grounded)
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
 
         // in air
-        else if(!grounded)
+        else if (!grounded)
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
     }
 
@@ -124,7 +121,7 @@ public class ControlPlayer : MonoBehaviour
         Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
 
         // limit velocity if needed
-        if(flatVel.magnitude > moveSpeed)
+        if (flatVel.magnitude > moveSpeed)
         {
             Vector3 limitedVel = flatVel.normalized * moveSpeed;
             rb.linearVelocity = new Vector3(limitedVel.x, rb.linearVelocity.y, limitedVel.z);
@@ -141,38 +138,5 @@ public class ControlPlayer : MonoBehaviour
     private void ResetJump()
     {
         readyToJump = true;
-    }
-
-    void stepClimb()
-    {
-        RaycastHit hitLower;
-        if (Physics.Raycast(stepRayLower.transform.position, transform.TransformDirection(Vector3.forward), out hitLower, 0.1f))
-        {
-            RaycastHit hitUpper;
-            if (!Physics.Raycast(stepRayUpper.transform.position, transform.TransformDirection(Vector3.forward), out hitUpper, 0.2f))
-            {
-                rb.position -= new Vector3(0f, -stepSmooth, 0f);
-            }
-        }
-
-        RaycastHit hitLower45;
-        if (Physics.Raycast(stepRayLower.transform.position, transform.TransformDirection(1.5f,0,1), out hitLower45, 0.1f))
-        {
-            RaycastHit hitUpper45;
-            if (!Physics.Raycast(stepRayUpper.transform.position, transform.TransformDirection(1.5f,0,1), out hitUpper45, 0.2f))
-            {
-                rb.position -= new Vector3(0f, -stepSmooth, 0f);
-            }
-        }
-
-        RaycastHit hitLowerMinus45;
-        if (Physics.Raycast(stepRayLower.transform.position, transform.TransformDirection(-1.5f,0,1), out hitLowerMinus45, 0.1f))
-        {
-            RaycastHit hitUpperMinus45;
-            if (!Physics.Raycast(stepRayUpper.transform.position, transform.TransformDirection(-1.5f,0,1), out hitUpperMinus45, 0.2f))
-            {
-                rb.position -= new Vector3(0f, -stepSmooth, 0f);
-            }
-        }
     }
 }

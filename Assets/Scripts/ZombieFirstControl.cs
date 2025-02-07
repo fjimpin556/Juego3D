@@ -5,16 +5,17 @@ public class ZombieFirstControl : MonoBehaviour
 {
     NavMeshAgent agent;
     [SerializeField] Animator anim;
-    
+
     [SerializeField] GameObject player;
     [SerializeField] float visionArea = 5;
     float distance;
+    float screamCooldown = 0;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        anim = GetComponentInChildren<Animator>();  
+        anim = GetComponentInChildren<Animator>();        
     }
 
     // Update is called once per frame
@@ -25,14 +26,15 @@ public class ZombieFirstControl : MonoBehaviour
         {
             Scream();
         }
-        else 
-        {
-            goBack();
-        }
     }
 
     void Scream()
-    {}
-
-    void goBack(){}
+    {
+        if (screamCooldown <= 0.1)
+        {
+            anim.SetTrigger("hasScreamed");
+        }
+        screamCooldown += Time.deltaTime;
+        if (screamCooldown >= 4) {screamCooldown = 0;}
+    }
 }
