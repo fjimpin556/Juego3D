@@ -15,11 +15,14 @@ public class HistoryController : MonoBehaviour
 
     bool canFinger = false;
     public static bool finger = false;
+    [SerializeField] GameObject fingerDisp;
     public static bool infected = false;
+    public static bool infectingDeath = false;
     [SerializeField] Slider infBar;
     [SerializeField] GameObject barCont;
-    float infectionCount = 300;
+    float infectionCount = 180;
     public static bool antidoto = false;
+    [SerializeField] GameObject antidotoDisp;
 
     public AgentFirstControl AgFirstC;    
 
@@ -28,6 +31,14 @@ public class HistoryController : MonoBehaviour
     {
         Invoke("StartDialogue", 2);
         historyCount = 8;        
+        antidoto = false;
+        antidotoDisp.SetActive(false);
+        finger = false;
+        fingerDisp.SetActive(false);
+        infected = false;
+        barCont.SetActive(false);
+        infectingDeath = false;
+        infectionCount = 180;
     }
 
     // Update is called once per frame
@@ -38,6 +49,10 @@ public class HistoryController : MonoBehaviour
             barCont.SetActive(true);
             infectionCount -= Time.deltaTime;
             infBar.value = infectionCount;
+            if (infectionCount <= 0)
+            {
+                infectingDeath = true;
+            }
         }
         if (Input.GetKeyDown(KeyCode.Return))
         {
@@ -57,18 +72,22 @@ public class HistoryController : MonoBehaviour
         {
             historyCount = 22;
         }
+        if (antidoto == true)
+        {
+            antidotoDisp.SetActive(true);
+        }
 
         if (finger == true)
         {
-            Debug.Log("finger");
+            fingerDisp.SetActive(true);
+        }
+        else
+        {
+            fingerDisp.SetActive(false);
         }
         if (antidoto == true)
         {
-            cuadroDialogo.SetActive(true);
-            dialogo.text = "Rápido, ahora que tienes el antídoto, puedes irte.";
-            infected = true;
-            historyCount = 50; 
-            Invoke("QuitDialogue3", 3);
+            passDialogue();
         }
     }
 
@@ -90,7 +109,7 @@ public class HistoryController : MonoBehaviour
         }
         else if (historyCount == 1)
         {
-            dialogo.text = "Mira, trataré de ser breve. El gobierno está realizando ciertos experimentos en este lugar. Están proando con los prisioneros una especie de virus que te convierte en zombie.";
+            dialogo.text = "Mira, trataré de ser breve. El gobierno está realizando ciertos experimentos en este lugar. Están probando con los prisioneros una especie de virus que te convierte en zombie.";
             historyCount = 2;
         }
         else if (historyCount == 2)
@@ -229,7 +248,7 @@ public class HistoryController : MonoBehaviour
         else if (historyCount == 31)
         {
             cuadroDialogo.SetActive(true);
-            dialogo.text = "Parece ser que ya han aparecido los primeros síntomas. A partir de ahora, intuyo que deben quedarte unos 5 minutos para convertirte en un zombie.";            
+            dialogo.text = "Parece ser que ya han aparecido los primeros síntomas. A partir de ahora, intuyo que deben quedarte unos 3 minutos para convertirte en un zombie.";            
             infected = true;
             historyCount = 32;     
         }
@@ -258,11 +277,14 @@ public class HistoryController : MonoBehaviour
             cuadroDialogo.SetActive(false);           
             historyCount = 45; 
         }        
-        else if (historyCount == 50)
+        else if (historyCount == 49)
         {
-            cuadroDialogo.SetActive(false);           
-            historyCount = 51; 
-        }        
+            cuadroDialogo.SetActive(true);
+            dialogo.text = "Rápido, ahora que tienes el antídoto, puedes irte.";
+            infected = true;
+            historyCount = 50; 
+            Invoke("QuitDialogue3", 3); 
+        }              
     }
 
     public void QuitDialogue1()

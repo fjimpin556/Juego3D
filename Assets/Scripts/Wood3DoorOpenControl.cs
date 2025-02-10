@@ -28,6 +28,8 @@ public class Wood3DoorOpenControl : MonoBehaviour
                 anim.SetBool("isOpening", true);
                 aud.PlayOneShot(openDD);
                 open = true;
+                HistoryController.finger = false;
+                HistoryController.historyCount = 49;
             }            
         }
     }

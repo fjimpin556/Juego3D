@@ -64,6 +64,10 @@ public class ControlPlayer : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
+        canMove = false;
+        canPistol = false;
+        killCount = 0;
+        bulletP = 0;
 
         readyToJump = true;
     }
@@ -101,6 +105,11 @@ public class ControlPlayer : MonoBehaviour
         if (killCount >= 40 && !HistoryController.infected)
         {
             HistoryController.historyCount = 31;
+        }
+
+        if (HistoryController.infectingDeath)
+        {
+            infectDeath();
         }
 
         // handle drag
@@ -298,5 +307,20 @@ public class ControlPlayer : MonoBehaviour
     void goCredits()
     {
         SceneManager.LoadScene("Credits");
+    }
+
+    void infectDeath()
+    {
+        if (!death)
+        {
+            health -= Time.deltaTime * 10;
+            lifeBar.value = health;
+            if (health <= 0)
+            {
+                playerDeath = true;
+                death = true;
+                Invoke("goToMenu", 3);
+            }
+        }
     }
 }

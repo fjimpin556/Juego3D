@@ -6,15 +6,17 @@ public class MenuControl : MonoBehaviour
     public void StartGame()
     {
         SceneManager.LoadScene("Game");
-    }    
-    public void GoToInstructions()
-    {
-        SceneManager.LoadScene("Instructions");
-    }
+    }        
 
     public void ExitGame()
     {
         Application.Quit();
+    }
+
+    public void Start()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     public void Update()
