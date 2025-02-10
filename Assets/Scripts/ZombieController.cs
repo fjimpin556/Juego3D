@@ -9,16 +9,24 @@ public class ZombieController : MonoBehaviour
 
     [SerializeField] Animator anim;
     [SerializeField] GameObject player;
+    public ControlPlayer CP;
     [SerializeField] float distance;
     [SerializeField] float visionArea = 10;
     [SerializeField] bool follow = false;
     float punchCooldown = 0;
+    [SerializeField] GameObject bulletDrop;
+
+    bool death = false;
+
+    [SerializeField] AudioClip sndG, sndM;
+    AudioSource audioSrc;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         zombie = GetComponent<NavMeshAgent>();
         anim = GetComponentInChildren<Animator>();
+        audioSrc = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -68,6 +76,7 @@ public class ZombieController : MonoBehaviour
         if (!follow)
         {
             anim.SetTrigger("hasScreamed");
+            audioSrc.PlayOneShot(sndG);
             zombie.speed = 0;
             follow = true;
             Invoke("StartFollow", 2);
@@ -75,17 +84,50 @@ public class ZombieController : MonoBehaviour
     }
 
     void StartFollow()
-    {        
+    {
         zombie.speed = 1.5f;
     }
 
     void Punch()
     {
-        if (punchCooldown <= 0.1)
+        if (punchCooldown <= 0 && !death)
         {
             anim.SetTrigger("hasPunched");
+            Invoke("DamagePlayer", 1.1f);
         }
         punchCooldown += Time.deltaTime;
         if (punchCooldown >= 2.5) { punchCooldown = 0; }
+        
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Bullet")
+        {
+            if (!death)
+            {
+                anim.SetTrigger("hasDied");
+                audioSrc.PlayOneShot(sndM);
+                Destroy(other.gameObject);
+                ControlPlayer.killCount += 1;
+                death = true;
+                Instantiate(bulletDrop, transform.position, transform.rotation);
+                Invoke("Dying", 3);
+            }
+
+        }
+    }
+
+    void Dying()
+    {
+        Destroy(gameObject);
+    }
+
+    void DamagePlayer()
+    {
+        if (distance < 2.5f)
+        {
+            CP.Damage();
+        }
     }
 }

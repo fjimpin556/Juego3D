@@ -4,7 +4,7 @@ public class AnimatorController : MonoBehaviour
 {
     Animator anim;
     [SerializeField] float jumpCooldown = 1.2f;
-    float lastJump = 0;    
+    float lastJump = 0;
     public ControlPlayer CP;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -19,19 +19,27 @@ public class AnimatorController : MonoBehaviour
         float movementX = Input.GetAxis("Horizontal");
         float movementZ = Input.GetAxis("Vertical");
 
-        if (movementX != 0 || movementZ != 0)
+        if (ControlPlayer.canMove)
         {
-            anim.SetBool("isRunning", true);
-        }
-        else
-        {
-            anim.SetBool("isRunning", false);
-        }
+            if (movementX != 0 || movementZ != 0)
+            {
+                anim.SetBool("isRunning", true);
+            }
+            else
+            {
+                anim.SetBool("isRunning", false);
+            }
 
-        if (Input.GetKeyDown(KeyCode.Space) && (Time.time - lastJump > jumpCooldown))
+            if (Input.GetKeyDown(KeyCode.Space) && (Time.time - lastJump > jumpCooldown))
+            {
+                lastJump = Time.time;
+                anim.SetTrigger("hasJumped");
+            }
+        }
+        else if (ControlPlayer.canPistol && Input.GetKeyDown(KeyCode.E))
         {
-            lastJump = Time.time;
-            anim.SetTrigger("hasJumped");
+            ControlPlayer.canPistol = false;
+            anim.SetTrigger("hasPistoled");
         }
 
         if (CP.pistoltrue)
@@ -42,5 +50,18 @@ public class AnimatorController : MonoBehaviour
         {
             anim.SetBool("isPistol", false);
         }
+
+        if (ControlPlayer.playerDeath)
+        {
+            anim.SetTrigger("hasDied");
+            ControlPlayer.playerDeath = false;
+            ControlPlayer.canMove = false;
+            ControlPlayer.canPistol = false;
+        }
+    }
+
+    public void Pick()
+    {
+        anim.SetTrigger("hasPicked");        
     }
 }

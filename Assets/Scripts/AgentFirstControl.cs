@@ -4,18 +4,19 @@ using UnityEngine.AI;
 public class AgentFirstControl : MonoBehaviour
 {
     NavMeshAgent agent;
-    [SerializeField] Transform goal;    
+    [SerializeField] Transform goal;
+    [SerializeField] Transform goal2;
     [SerializeField] Animator anim;
-    
+    [SerializeField] GameObject player;
 
-    bool esperando;
+
+    bool esperando = true;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        anim = GetComponentInChildren<Animator>();        
-        startMoving();
+        anim = GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
@@ -28,11 +29,30 @@ public class AgentFirstControl : MonoBehaviour
         else
         {
             anim.SetBool("isMoving", false);
+            if(!esperando)
+            {
+                HistoryController.historyCount = 12;
+                esperando = true;
+            }
         }
     }
 
-    void startMoving()
+    public void startMoving()
     {
         agent.destination = goal.position;
+        esperando = false;
     }
+
+    public void startGoing()
+    {
+        agent.destination = goal2.position;        
+        esperando = false;
+        Invoke("disappear", 2);
+    }
+    
+    void disappear()
+    {
+        Destroy(gameObject);
+    }
+    
 }

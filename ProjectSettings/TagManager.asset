@@ -5,6 +5,16 @@ TagManager:
   serializedVersion: 3
   tags:
   - Wall
+  - Bullet
+  - random1
+  - BulletRec
+  - BulletDrop
+  - BulletEnemy
+  - SecurityDoor
+  - takeF
+  - antidoto
+  - EndDoor
+  - Cure
   layers:
   - Default
   - TransparentFX
